@@ -1,1 +1,0 @@
-CLUTCH V1 prototype. This is the phone-friendly first draft. Next step is connecting free cloud accounts/data and controlled video storage.
