@@ -1,1 +1,28 @@
-<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="styles.css"><title>CLUTCH</title><header><b>CLUTCH 🏀</b><span>⌕　♧</span></header><main id="app"></main><nav><button onclick="show('home')">⌂<small>Home</small></button><button onclick="show('discover')">⌕<small>Discover</small></button><button class="plus" onclick="post()">＋</button><button onclick="show('friends')">♧<small>Friends</small></button><button onclick="show('profile')">◯<small>Profile</small></button></nav><script src="app.js"></script>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ff6a1a">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="styles.css">
+<title>CLUTCH 🏀</title>
+</head>
+<body>
+<header class="topbar">
+<button class="icon-btn" onclick="showToast('No new notifications')">♢</button>
+<button class="brand" onclick="show('home')">CLUTCH 🏀</button>
+<button class="icon-btn" onclick="show('friends')">✉</button>
+</header>
+<main id="app"></main>
+<nav class="bottom-nav">
+<button onclick="show('home')" data-tab="home">⌂<small>Home</small></button>
+<button onclick="show('discover')" data-tab="discover">⌕<small>Discover</small></button>
+<button class="plus" onclick="show('create')">＋</button>
+<button onclick="show('friends')" data-tab="friends">♧<small>Friends</small></button>
+<button onclick="show('profile')" data-tab="profile">◯<small>Profile</small></button>
+</nav>
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
