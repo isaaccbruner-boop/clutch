@@ -1,4 +1,4 @@
-```javascript
+
 /* =========================================================
    CLUTCH — app.js
    Front-end app logic
@@ -717,4 +717,3 @@ window.filterCategory = filterCategory;
    ========================================================= */
 
 showHome();
-```
