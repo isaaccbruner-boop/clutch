@@ -1468,7 +1468,7 @@ function sharePost(id) {
 
   }
 
-}
+window.show = show;
 
 window.showHome = showHome;
 
