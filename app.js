@@ -1,1497 +1,720 @@
+```javascript
+/* =========================================================
+   CLUTCH — app.js
+   Front-end app logic
+   ========================================================= */
+
 const DRILLS = [
-
   {
-
     title: "Form Shooting",
-
     cat: "Shooting",
-
     level: "Beginner",
-
-    duration: "10 min",
-
-    emoji: "🏀"
-
+    description: "Build a consistent shooting form close to the basket."
   },
-
   {
-
     title: "5-Spot Shooting",
-
     cat: "Shooting",
-
     level: "Intermediate",
-
-    duration: "15 min",
-
-    emoji: "🔥"
-
+    description: "Work through five shooting spots and focus on consistency."
   },
-
   {
-
     title: "Two-Ball Pounds",
-
     cat: "Ball Handling",
-
     level: "Beginner",
-
-    duration: "8 min",
-
-    emoji: "🏀"
-
+    description: "Control two basketballs while keeping your eyes up."
   },
-
   {
-
     title: "Cone Crossovers",
-
     cat: "Ball Handling",
-
     level: "Intermediate",
-
-    duration: "12 min",
-
-    emoji: "⚡"
-
+    description: "Practice quick crossovers and changes of direction."
   },
-
   {
-
     title: "Mikan Drill",
-
     cat: "Finishing",
-
     level: "Beginner",
-
-    duration: "10 min",
-
-    emoji: "💪"
-
+    description: "Improve touch and finishing around the basket."
   },
-
   {
-
     title: "Euro Step Series",
-
     cat: "Finishing",
-
     level: "Advanced",
-
-    duration: "15 min",
-
-    emoji: "🔥"
-
+    description: "Practice controlled finishing with different footwork."
   },
-
   {
-
     title: "Defensive Slides",
-
     cat: "Defense",
-
-    level: "Intermediate",
-
-    duration: "10 min",
-
-    emoji: "🛡️"
-
+    level: "Beginner",
+    description: "Build defensive footwork and lateral quickness."
   },
-
   {
-
-    title: "Change of Pace",
-
-    cat: "Ball Handling",
-
+    title: "Closeout Drill",
+    cat: "Defense",
     level: "Intermediate",
-
-    duration: "10 min",
-
-    emoji: "⚡"
-
+    description: "Practice closing out under control and staying in front."
+  },
+  {
+    title: "Attack the Cone",
+    cat: "Ball Handling",
+    level: "Intermediate",
+    description: "Attack a defender simulation with explosive moves."
+  },
+  {
+    title: "Free Throw Routine",
+    cat: "Shooting",
+    level: "Beginner",
+    description: "Create a repeatable free throw routine."
   }
-
 ];
 
 let posts = [
-
   {
-
     id: 1,
-
     user: "Isaac",
-
     handle: "@isaac",
-
-    caption: "Shooting workout today. 100 shots. 🔥",
-
-    likes: 24,
-
-    comments: 6,
-
-    video: false
-
+    caption: "Getting some work in 🏀",
+    likes: 12,
+    liked: false,
+    media: null
   },
-
   {
-
     id: 2,
-
     user: "Jaylen",
-
     handle: "@jay_ball",
-
-    caption: "Working on my handles today 🏀",
-
-    likes: 18,
-
-    comments: 3,
-
-    video: false
-
+    caption: "Ball handling session.",
+    likes: 8,
+    liked: false,
+    media: null
   },
-
   {
-
     id: 3,
-
     user: "Mason",
-
     handle: "@masonb23",
-
-    caption: "Getting reps in before the game.",
-
-    likes: 31,
-
-    comments: 8,
-
-    video: false
-
+    caption: "Working on my finishing.",
+    likes: 15,
+    liked: false,
+    media: null
   }
-
 ];
 
 let selectedMedia = null;
-
 let postType = "Workout";
 
-const app = document.getElementById("app") || document.body;
-
-function esc(value) {
-
-  return String(value).replace(/[&<>"']/g, function (char) {
-
-    return {
-
-      "&": "&amp;",
-
-      "<": "&lt;",
-
-      ">": "&gt;",
-
-      '"': "&quot;",
-
-      "'": "&#039;"
-
-    }[char];
-
-  });
-
-}
-
-function injectStyles() {
-
-  if (document.getElementById("clutch-styles")) return;
-
-  const style = document.createElement("style");
-
-  style.id = "clutch-styles";
-
-  style.textContent = `
-
-    * {
-
-      box-sizing: border-box;
-
-    }
-
-    body {
-
-      margin: 0;
-
-      background: #090909;
-
-      color: white;
-
-      font-family: Arial, Helvetica, sans-serif;
-
-    }
-
-    button,
-
-    input,
-
-    textarea {
-
-      font: inherit;
-
-    }
-
-    button {
-
-      cursor: pointer;
-
-    }
-
-    .clutch-shell {
-
-      min-height: 100vh;
-
-      padding-bottom: 105px;
-
-    }
-
-    .clutch-header {
-
-      height: 86px;
-
-      border-bottom: 1px solid #292929;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: space-between;
-
-      padding: 0 30px;
-
-      background: #101010;
-
-      position: sticky;
-
-      top: 0;
-
-      z-index: 10;
-
-    }
-
-    .logo {
-
-      font-size: 31px;
-
-      font-weight: 900;
-
-      font-style: italic;
-
-      letter-spacing: -1px;
-
-    }
-
-    .header-icons {
-
-      display: flex;
-
-      gap: 22px;
-
-      font-size: 25px;
-
-      color: #ddd;
-
-    }
-
-    .content {
-
-      padding: 42px 30px 20px;
-
-      max-width: 900px;
-
-      margin: auto;
-
-    }
-
-    .title {
-
-      font-size: 38px;
-
-      margin: 0 0 38px;
-
-      font-weight: 800;
-
-    }
-
-    .post {
-
-      background: #171717;
-
-      border: 1px solid #303030;
-
-      border-radius: 30px;
-
-      padding: 28px;
-
-      margin-bottom: 25px;
-
-    }
-
-    .post-user {
-
-      display: flex;
-
-      align-items: center;
-
-      gap: 15px;
-
-      margin-bottom: 28px;
-
-    }
-
-    .avatar {
-
-      width: 58px;
-
-      height: 58px;
-
-      border-radius: 50%;
-
-      background: #292929;
-
-      display: grid;
-
-      place-items: center;
-
-      font-weight: 800;
-
-      color: #ff641c;
-
-      font-size: 24px;
-
-    }
-
-    .username {
-
-      font-size: 22px;
-
-      font-weight: 800;
-
-    }
-
-    .handle {
-
-      color: #888;
-
-      font-size: 17px;
-
-      margin-top: 4px;
-
-    }
-
-    .caption {
-
-      font-size: 22px;
-
-      line-height: 1.35;
-
-      margin-bottom: 24px;
-
-    }
-
-    .video-box {
-
-      height: 370px;
-
-      background: #252525;
-
-      border-radius: 25px;
-
-      display: grid;
-
-      place-items: center;
-
-      color: #aaa;
-
-      font-size: 22px;
-
-      margin-bottom: 22px;
-
-    }
-
-    .video-box button {
-
-      background: transparent;
-
-      border: 0;
-
-      color: #bbb;
-
-      font-size: 21px;
-
-    }
-
-    .post-actions {
-
-      display: flex;
-
-      gap: 28px;
-
-      color: #bbb;
-
-      font-size: 18px;
-
-    }
-
-    .action-button {
-
-      background: none;
-
-      border: 0;
-
-      color: #bbb;
-
-      padding: 0;
-
-    }
-
-    .action-button.liked {
-
-      color: #ff641c;
-
-    }
-
-    .drill-card {
-
-      background: #171717;
-
-      border: 1px solid #303030;
-
-      border-radius: 25px;
-
-      padding: 25px;
-
-      margin-bottom: 18px;
-
-    }
-
-    .drill-top {
-
-      display: flex;
-
-      justify-content: space-between;
-
-      gap: 15px;
-
-    }
-
-    .drill-emoji {
-
-      font-size: 42px;
-
-      margin-bottom: 10px;
-
-    }
-
-    .drill-title {
-
-      font-size: 25px;
-
-      font-weight: 800;
-
-    }
-
-    .drill-meta {
-
-      color: #999;
-
-      margin-top: 9px;
-
-      line-height: 1.5;
-
-    }
-
-    .orange-button {
-
-      border: 0;
-
-      background: #ff641c;
-
-      color: #090909;
-
-      font-weight: 800;
-
-      border-radius: 15px;
-
-      padding: 14px 20px;
-
-    }
-
-    .outline-button {
-
-      border: 1px solid #555;
-
-      background: #191919;
-
-      color: white;
-
-      font-weight: 700;
-
-      border-radius: 15px;
-
-      padding: 13px 18px;
-
-    }
-
-    .random-button {
-
-      width: 100%;
-
-      margin-bottom: 25px;
-
-      font-size: 18px;
-
-      padding: 17px;
-
-    }
-
-    .create-box {
-
-      background: #171717;
-
-      border: 1px solid #303030;
-
-      border-radius: 28px;
-
-      padding: 30px;
-
-    }
-
-    .file-input {
-
-      width: 100%;
-
-      padding: 17px;
-
-      background: #101010;
-
-      border: 1px solid #444;
-
-      border-radius: 18px;
-
-      color: white;
-
-      margin-bottom: 25px;
-
-    }
-
-    textarea {
-
-      width: 100%;
-
-      min-height: 160px;
-
-      resize: vertical;
-
-      background: #101010;
-
-      border: 1px solid #444;
-
-      border-radius: 18px;
-
-      padding: 20px;
-
-      color: white;
-
-      outline: none;
-
-      margin-bottom: 20px;
-
-    }
-
-    textarea::placeholder {
-
-      color: #888;
-
-    }
-
-    .full-button {
-
-      width: 100%;
-
-      font-size: 18px;
-
-      padding: 18px;
-
-    }
-
-    .profile-card {
-
-      background: #171717;
-
-      border: 1px solid #303030;
-
-      border-radius: 28px;
-
-      padding: 30px;
-
-    }
-
-    .profile-avatar {
-
-      width: 85px;
-
-      height: 85px;
-
-      border-radius: 50%;
-
-      background: #292929;
-
-      display: grid;
-
-      place-items: center;
-
-      font-size: 34px;
-
-      color: #ff641c;
-
-      font-weight: 900;
-
-      margin-bottom: 18px;
-
-    }
-
-    .profile-name {
-
-      font-size: 30px;
-
-      font-weight: 800;
-
-    }
-
-    .profile-handle {
-
-      color: #888;
-
-      font-size: 18px;
-
-      margin-bottom: 30px;
-
-    }
-
-    .stat-row {
-
-      display: flex;
-
-      gap: 35px;
-
-      margin-bottom: 25px;
-
-    }
-
-    .stat strong {
-
-      display: block;
-
-      font-size: 23px;
-
-    }
-
-    .stat span {
-
-      color: #888;
-
-    }
-
-    .empty {
-
-      color: #888;
-
-      font-size: 18px;
-
-    }
-
-    .bottom-nav {
-
-      position: fixed;
-
-      bottom: 0;
-
-      left: 0;
-
-      right: 0;
-
-      height: 100px;
-
-      background: #111;
-
-      border-top: 1px solid #292929;
-
-      display: flex;
-
-      justify-content: space-around;
-
-      align-items: center;
-
-      z-index: 20;
-
-    }
-
-    .nav-button {
-
-      background: none;
-
-      border: 0;
-
-      color: #aaa;
-
-      display: flex;
-
-      flex-direction: column;
-
-      align-items: center;
-
-      gap: 7px;
-
-      font-size: 15px;
-
-    }
-
-    .nav-icon {
-
-      font-size: 23px;
-
-    }
-
-    .plus-button {
-
-      width: 68px;
-
-      height: 68px;
-
-      border-radius: 50%;
-
-      border: 0;
-
-      background: #ff641c;
-
-      color: #090909;
-
-      font-size: 42px;
-
-      line-height: 1;
-
-    }
-
-    .toast {
-
-      position: fixed;
-
-      left: 50%;
-
-      bottom: 120px;
-
-      transform: translateX(-50%);
-
-      background: #292929;
-
-      color: white;
-
-      padding: 14px 22px;
-
-      border-radius: 14px;
-
-      z-index: 50;
-
-      font-weight: 700;
-
-    }
-
-    @media (max-width: 600px) {
-
-      .content {
-
-        padding: 35px 30px 20px;
-
-      }
-
-      .title {
-
-        font-size: 36px;
-
-      }
-
-      .post {
-
-        padding: 27px;
-
-      }
-
-      .video-box {
-
-        height: 330px;
-
-      }
-
-      .drill-top {
-
-        flex-direction: column;
-
-      }
-
-    }
-
-  `;
-
-  document.head.appendChild(style);
-
-}
+const app = document.getElementById("app");
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
 
 function showToast(message) {
+  const toast = document.getElementById("toast");
 
-  const old = document.querySelector(".toast");
-
-  if (old) old.remove();
-
-  const toast = document.createElement("div");
-
-  toast.className = "toast";
+  if (!toast) {
+    alert(message);
+    return;
+  }
 
   toast.textContent = message;
+  toast.classList.add("show");
 
-  document.body.appendChild(toast);
-
-  setTimeout(() => toast.remove(), 2200);
-
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2500);
 }
 
-function postCard(post) {
-
-  return `
-
-    <article class="post">
-
-      <div class="post-user">
-
-        <div class="avatar">${esc(post.user.charAt(0))}</div>
-
-        <div>
-
-          <div class="username">${esc(post.user)}</div>
-
-          <div class="handle">${esc(post.handle)} · today</div>
-
-        </div>
-
-      </div>
-
-      <div class="caption">${esc(post.caption)}</div>
-
-      <div class="video-box">
-
-        ${post.video
-
-          ? `<button onclick="showToast('Video player ready for your uploaded video ▶️')">▶ Workout video</button>`
-
-          : `<button onclick="showToast('Workout video preview')">▶ Workout video</button>`
-
-        }
-
-      </div>
-
-      <div class="post-actions">
-
-        <button class="action-button" onclick="toggleLike(${post.id}, this)">
-
-          ♡ ${post.likes}
-
-        </button>
-
-        <button class="action-button" onclick="showToast('Comments coming next 💬')">
-
-          💬 ${post.comments}
-
-        </button>
-
-        <button class="action-button" onclick="sharePost(${post.id})">
-
-          ↗ Share
-
-        </button>
-
-      </div>
-
-    </article>
-
-  `;
-
+function esc(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
-function drillCard(drill) {
-
-  return `
-
-    <div class="drill-card">
-
-      <div class="drill-top">
-
-        <div>
-
-          <div class="drill-emoji">${drill.emoji}</div>
-
-          <div class="drill-title">${esc(drill.title)}</div>
-
-          <div class="drill-meta">
-
-            ${esc(drill.cat)} · ${esc(drill.level)} · ${esc(drill.duration)}
-
-          </div>
-
-        </div>
-
-        <button class="orange-button"
-
-          onclick="startDrill('${esc(drill.title)}')">
-
-          Start
-
-        </button>
-
-      </div>
-
-    </div>
-
-  `;
-
+function randomItem(array) {
+  return array[Math.floor(Math.random() * array.length)];
 }
 
-function randomDrill() {
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
 
-  return DRILLS[Math.floor(Math.random() * DRILLS.length)];
+function show(section) {
+  if (!app) return;
 
-}
+  document.querySelectorAll(".bottom-nav button").forEach(button => {
+    button.classList.remove("active");
 
-function startDrill(title) {
+    if (button.dataset.tab === section) {
+      button.classList.add("active");
+    }
+  });
 
-  showToast(`Starting ${title} 🏀`);
+  if (section === "home") {
+    showHome();
+  }
 
+  if (section === "discover") {
+    showDiscover();
+  }
+
+  if (section === "friends") {
+    showFriends();
+  }
+
+  if (section === "profile") {
+    showProfile();
+  }
+
+  if (section === "create") {
+    showCreate();
+  }
 }
 
 function showHome() {
-
   app.innerHTML = `
+    <section class="page">
+      <div class="page-heading">
+        <p class="eyebrow">WELCOME BACK</p>
+        <h1>Home</h1>
+        <p class="muted">See what's happening on the court.</p>
+      </div>
 
-    <div class="clutch-shell">
-
-      <header class="clutch-header">
-
-        <div class="logo">CLUTCH 🏀</div>
-
-        <div class="header-icons">
-
-          <span>⌕</span>
-
-          <span>♧</span>
-
+      <div class="random-drill-box">
+        <div>
+          <p class="eyebrow">RANDOM DRILL</p>
+          <h2>Need something to work on?</h2>
+          <p class="muted">
+            Get a random basketball drill whenever you need one.
+          </p>
         </div>
 
-      </header>
+        <button class="primary-btn" onclick="showRandomDrill()">
+          Give Me a Drill 🏀
+        </button>
+      </div>
 
-      <main class="content">
+      <div class="section-title">
+        <h2>Latest</h2>
+      </div>
 
-        <h1 class="title">Following</h1>
-
-        ${posts.map(postCard).join("")}
-
-      </main>
-
-      ${navigation("home")}
-
-    </div>
-
+      <div id="home-posts">
+        ${posts.map(card).join("")}
+      </div>
+    </section>
   `;
-
 }
 
 function showDiscover() {
-
-  const first = randomDrill();
-
   app.innerHTML = `
+    <section class="page">
+      <div class="page-heading">
+        <p class="eyebrow">DISCOVER</p>
+        <h1>Find Your Next Drill</h1>
+        <p class="muted">Explore workouts and basketball content.</p>
+      </div>
 
-    <div class="clutch-shell">
+      <div class="search-box">
+        <input
+          id="drillSearch"
+          type="search"
+          placeholder="Search drills..."
+          oninput="filterDrills(this.value)"
+        >
+      </div>
 
-      <header class="clutch-header">
+      <div class="category-row">
+        <button onclick="filterCategory('All')">All</button>
+        <button onclick="filterCategory('Shooting')">Shooting</button>
+        <button onclick="filterCategory('Ball Handling')">Handles</button>
+        <button onclick="filterCategory('Finishing')">Finishing</button>
+        <button onclick="filterCategory('Defense')">Defense</button>
+      </div>
 
-        <div class="logo">CLUTCH 🏀</div>
-
-        <div class="header-icons">
-
-          <span>⌕</span>
-
-          <span>♧</span>
-
-        </div>
-
-      </header>
-
-      <main class="content">
-
-        <h1 class="title">Discover</h1>
-
-        <button class="orange-button random-button"
-
-          onclick="showRandomDrill()">
-
-          🎲 Show Me a Random Drill
-
-        </button>
-
-        <div id="random-drill">
-
-          ${drillCard(first)}
-
-        </div>
-
-        <h2>All Drills</h2>
-
-        ${DRILLS.map(drillCard).join("")}
-
-      </main>
-
-      ${navigation("discover")}
-
-    </div>
-
+      <div id="drill-list">
+        ${DRILLS.map(drill).join("")}
+      </div>
+    </section>
   `;
-
-}
-
-function showRandomDrill() {
-
-  const drill = randomDrill();
-
-  const box = document.getElementById("random-drill");
-
-  if (box) {
-
-    box.innerHTML = drillCard(drill);
-
-    box.scrollIntoView({
-
-      behavior: "smooth",
-
-      block: "center"
-
-    });
-
-  }
-
 }
 
 function showFriends() {
-
   app.innerHTML = `
+    <section class="page">
+      <div class="page-heading">
+        <p class="eyebrow">COMMUNITY</p>
+        <h1>Friends</h1>
+        <p class="muted">See what your friends are working on.</p>
+      </div>
 
-    <div class="clutch-shell">
-
-      <header class="clutch-header">
-
-        <div class="logo">CLUTCH 🏀</div>
-
-        <div class="header-icons">
-
-          <span>⌕</span>
-
-          <span>♧</span>
-
+      <div class="friend-list">
+        <div class="friend-card">
+          <div class="avatar">J</div>
+          <div>
+            <strong>Jaylen</strong>
+            <p>@jay_ball</p>
+          </div>
+          <button onclick="showToast('Following Jaylen')">Follow</button>
         </div>
 
-      </header>
-
-      <main class="content">
-
-        <h1 class="title">Friends</h1>
-
-        <div class="profile-card">
-
-          <h2>Your Basketball Community</h2>
-
-          <p class="empty">
-
-            Follow players and teammates to see their workouts,
-
-            progress and posts here.
-
-          </p>
-
-          <button class="orange-button"
-
-            onclick="showToast('Friend search coming next 🔎')">
-
-            Find Friends
-
-          </button>
-
+        <div class="friend-card">
+          <div class="avatar">M</div>
+          <div>
+            <strong>Mason</strong>
+            <p>@masonb23</p>
+          </div>
+          <button onclick="showToast('Following Mason')">Follow</button>
         </div>
+      </div>
 
-      </main>
+      <div class="section-title">
+        <h2>Recent Posts</h2>
+      </div>
 
-      ${navigation("friends")}
-
-    </div>
-
+      ${posts.map(card).join("")}
+    </section>
   `;
-
 }
 
 function showProfile() {
-
   app.innerHTML = `
+    <section class="page">
+      <div class="profile-header">
+        <div class="large-avatar">I</div>
 
-    <div class="clutch-shell">
+        <h1>Isaac</h1>
+        <p class="muted">@isaac</p>
 
-      <header class="clutch-header">
-
-        <div class="logo">CLUTCH 🏀</div>
-
-        <div class="header-icons">
-
-          <span>⌕</span>
-
-          <span>♧</span>
-
-        </div>
-
-      </header>
-
-      <main class="content">
-
-        <h1 class="title">Profile</h1>
-
-        <div class="profile-card">
-
-          <div class="profile-avatar">I</div>
-
-          <div class="profile-name">Isaac</div>
-
-          <div class="profile-handle">@isaac</div>
-
-          <div class="stat-row">
-
-            <div class="stat">
-
-              <strong>${posts.length}</strong>
-
-              <span>Posts</span>
-
-            </div>
-
-            <div class="stat">
-
-              <strong>0</strong>
-
-              <span>Followers</span>
-
-            </div>
-
-            <div class="stat">
-
-              <strong>0</strong>
-
-              <span>Following</span>
-
-            </div>
-
+        <div class="profile-stats">
+          <div>
+            <strong>${posts.length}</strong>
+            <span>Posts</span>
           </div>
 
-          <button class="outline-button"
+          <div>
+            <strong>0</strong>
+            <span>Followers</span>
+          </div>
 
-            onclick="showToast('Profile editing coming next ✏️')">
-
-            Edit Profile
-
-          </button>
-
+          <div>
+            <strong>0</strong>
+            <span>Following</span>
+          </div>
         </div>
+      </div>
 
-      </main>
+      <div class="section-title">
+        <h2>Your Posts</h2>
+      </div>
 
-      ${navigation("profile")}
-
-    </div>
-
+      ${posts.filter(p => p.handle === "@isaac").map(card).join("") ||
+        `<p class="muted">You haven't posted anything yet.</p>`}
+    </section>
   `;
-
 }
 
 function showCreate() {
-
   app.innerHTML = `
+    <section class="page create-page">
+      <div class="page-heading">
+        <p class="eyebrow">CREATE</p>
+        <h1>Create</h1>
+        <p class="muted">Share your work with the CLUTCH community.</p>
+      </div>
 
-    <div class="clutch-shell">
+      <div class="create-card">
 
-      <header class="clutch-header">
+        <div class="upload-area">
+          <input
+            id="mediaInput"
+            type="file"
+            accept="image/*,video/*"
+            onchange="handleFile(event)"
+          >
 
-        <div class="logo">CLUTCH 🏀</div>
+          <label for="mediaInput" class="upload-button">
+            📸 Choose Photo or Video
+          </label>
 
-        <div class="header-icons">
-
-          <span>⌕</span>
-
-          <span>♧</span>
-
+          <div id="mediaPreview"></div>
         </div>
 
-      </header>
-
-      <main class="content">
-
-        <h1 class="title">Create</h1>
-
-        <div class="create-box">
-
-          <input
-
-            class="file-input"
-
-            id="mediaInput"
-
-            type="file"
-
-            accept="image/*,video/*"
-
-            onchange="handleFile(event)"
-
-          />
-
-          <textarea
-
-            id="captionInput"
-
-            placeholder="What are you working on?"
-
-          ></textarea>
-
+        <div class="post-type-row">
           <button
-
-            class="orange-button full-button"
-
-            onclick="createPost()">
-
-            Post
-
+            class="type-button active"
+            onclick="setType('Workout', this)"
+          >
+            Workout
           </button>
 
+          <button
+            class="type-button"
+            onclick="setType('Game', this)"
+          >
+            Game
+          </button>
+
+          <button
+            class="type-button"
+            onclick="setType('Tips', this)"
+          >
+            Tips
+          </button>
         </div>
 
-      </main>
+        <textarea
+          id="captionInput"
+          placeholder="What are you working on?"
+        ></textarea>
 
-      ${navigation("create")}
-
-    </div>
-
+        <button class="primary-btn full" onclick="createPost()">
+          Post
+        </button>
+      </div>
+    </section>
   `;
-
 }
 
-function navigation(active) {
+/* =========================================================
+   DRILLS
+   ========================================================= */
 
+function drill(d) {
   return `
+    <article class="drill-card">
+      <div class="drill-icon">🏀</div>
 
-    <nav class="bottom-nav">
+      <div class="drill-info">
+        <p class="eyebrow">${esc(d.cat)}</p>
+        <h3>${esc(d.title)}</h3>
+        <p>${esc(d.description)}</p>
 
-      <button class="nav-button"
-
-        onclick="showHome()">
-
-        <span class="nav-icon">⌂</span>
-
-        <span>Home</span>
-
-      </button>
-
-      <button class="nav-button"
-
-        onclick="showDiscover()">
-
-        <span class="nav-icon">⌕</span>
-
-        <span>Discover</span>
-
-      </button>
+        <span class="level">
+          ${esc(d.level)}
+        </span>
+      </div>
 
       <button
-
-        class="plus-button"
-
-        onclick="showCreate()">
-
-        +
-
+        class="small-btn"
+        onclick="startDrill(${DRILLS.indexOf(d)})"
+      >
+        Start
       </button>
-
-      <button class="nav-button"
-
-        onclick="showFriends()">
-
-        <span class="nav-icon">♧</span>
-
-        <span>Friends</span>
-
-      </button>
-
-      <button class="nav-button"
-
-        onclick="showProfile()">
-
-        <span class="nav-icon">○</span>
-
-        <span>Profile</span>
-
-      </button>
-
-    </nav>
-
+    </article>
   `;
+}
 
+function showRandomDrill() {
+  const d = randomItem(DRILLS);
+
+  app.innerHTML = `
+    <section class="page">
+      <div class="page-heading">
+        <p class="eyebrow">YOUR RANDOM DRILL</p>
+        <h1>${esc(d.title)}</h1>
+        <p class="muted">${esc(d.description)}</p>
+      </div>
+
+      <div class="drill-feature">
+        <div class="big-ball">🏀</div>
+
+        <p><strong>Category:</strong> ${esc(d.cat)}</p>
+        <p><strong>Level:</strong> ${esc(d.level)}</p>
+
+        <button
+          class="primary-btn full"
+          onclick="startDrill(${DRILLS.indexOf(d)})"
+        >
+          Start Drill
+        </button>
+
+        <button
+          class="secondary-btn full"
+          onclick="showRandomDrill()"
+        >
+          Try Another
+        </button>
+      </div>
+    </section>
+  `;
+}
+
+function startDrill(index) {
+  const d = DRILLS[index];
+
+  if (!d) return;
+
+  app.innerHTML = `
+    <section class="page">
+      <div class="page-heading">
+        <p class="eyebrow">${esc(d.cat)}</p>
+        <h1>${esc(d.title)}</h1>
+        <p class="muted">${esc(d.description)}</p>
+      </div>
+
+      <div class="drill-feature">
+        <div class="big-ball">🏀</div>
+
+        <h2>Let's Work</h2>
+
+        <p>
+          Focus on good technique, controlled movements,
+          and consistency.
+        </p>
+
+        <button
+          class="primary-btn full"
+          onclick="showToast('Drill started!')"
+        >
+          Start Timer
+        </button>
+
+        <button
+          class="secondary-btn full"
+          onclick="showRandomDrill()"
+        >
+          Pick Another Drill
+        </button>
+      </div>
+    </section>
+  `;
+}
+
+function filterDrills(query) {
+  const value = query.toLowerCase().trim();
+
+  const list = document.getElementById("drill-list");
+
+  if (!list) return;
+
+  const results = DRILLS.filter(d =>
+    d.title.toLowerCase().includes(value) ||
+    d.cat.toLowerCase().includes(value) ||
+    d.level.toLowerCase().includes(value)
+  );
+
+  list.innerHTML = results.length
+    ? results.map(drill).join("")
+    : `<p class="muted">No drills found.</p>`;
+}
+
+function filterCategory(category) {
+  const list = document.getElementById("drill-list");
+
+  if (!list) return;
+
+  const results =
+    category === "All"
+      ? DRILLS
+      : DRILLS.filter(d => d.cat === category);
+
+  list.innerHTML = results.map(drill).join("");
+}
+
+/* =========================================================
+   POSTS
+   ========================================================= */
+
+function card(post) {
+  return `
+    <article class="post-card">
+
+      <div class="post-header">
+        <div class="avatar">
+          ${esc(post.user.charAt(0))}
+        </div>
+
+        <div>
+          <strong>${esc(post.user)}</strong>
+          <p>${esc(post.handle)}</p>
+        </div>
+      </div>
+
+      ${
+        post.media
+          ? post.media.type.startsWith("video/")
+            ? `
+              <video
+                class="post-media"
+                src="${post.media.url}"
+                controls
+                playsinline
+              ></video>
+            `
+            : `
+              <img
+                class="post-media"
+                src="${post.media.url}"
+                alt="Post media"
+              >
+            `
+          : `
+            <div class="post-placeholder">
+              🏀
+            </div>
+          `
+      }
+
+      <div class="post-content">
+        <p>${esc(post.caption)}</p>
+
+        <div class="post-actions">
+          <button onclick="toggleLike(${post.id})">
+            ${post.liked ? "❤️" : "♡"}
+            ${post.likes}
+          </button>
+
+          <button onclick="sharePost(${post.id})">
+            ↗ Share
+          </button>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function toggleLike(id) {
+  const post = posts.find(p => p.id === id);
+
+  if (!post) return;
+
+  post.liked = !post.liked;
+  post.likes += post.liked ? 1 : -1;
+
+  showToast(post.liked ? "Liked ❤️" : "Like removed");
+
+  show("home");
+}
+
+function sharePost(id) {
+  const post = posts.find(p => p.id === id);
+
+  if (!post) return;
+
+  const text = `${post.user}: ${post.caption}`;
+
+  if (navigator.share) {
+    navigator.share({
+      title: "CLUTCH",
+      text
+    }).catch(() => {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(text);
+    showToast("Post copied!");
+  } else {
+    showToast("Post ready to share 🔗");
+  }
+}
+
+/* =========================================================
+   CREATE POST
+   ========================================================= */
+
+function setType(type, element) {
+  postType = type;
+
+  document.querySelectorAll(".type-button").forEach(button => {
+    button.classList.remove("active");
+  });
+
+  if (element) {
+    element.classList.add("active");
+  }
 }
 
 function handleFile(event) {
-
   const file = event.target.files[0];
 
-  if (!file) {
+  if (!file) return;
 
-    selectedMedia = null;
+  selectedMedia = {
+    file,
+    url: URL.createObjectURL(file),
+    type: file.type
+  };
 
-    return;
+  const preview = document.getElementById("mediaPreview");
 
+  if (!preview) return;
+
+  if (file.type.startsWith("video/")) {
+    preview.innerHTML = `
+      <video
+        class="preview-media"
+        src="${selectedMedia.url}"
+        controls
+        playsinline
+      ></video>
+    `;
+  } else {
+    preview.innerHTML = `
+      <img
+        class="preview-media"
+        src="${selectedMedia.url}"
+        alt="Selected media"
+      >
+    `;
   }
-
-  selectedMedia = file;
-
-  showToast(
-
-    file.type.startsWith("video/")
-
-      ? "Video selected 🎥"
-
-      : "Photo selected 📸"
-
-  );
-
 }
 
 function createPost() {
-
   const captionInput = document.getElementById("captionInput");
 
-  if (!captionInput) return;
-
-  const caption = captionInput.value.trim();
-
-  if (!caption && !selectedMedia) {
-
-    showToast("Add a photo, video, or caption first.");
-
-    return;
-
-  }
+  const caption =
+    captionInput?.value.trim() ||
+    `Working on ${postType.toLowerCase()} 🏀`;
 
   const newPost = {
-
     id: Date.now(),
-
     user: "Isaac",
-
     handle: "@isaac",
-
-    caption: caption || "New basketball post 🏀",
-
+    caption,
     likes: 0,
-
-    comments: 0,
-
-    video: selectedMedia
-
-      ? selectedMedia.type.startsWith("video/")
-
-      : false
-
+    liked: false,
+    media: selectedMedia
   };
 
   posts.unshift(newPost);
 
   selectedMedia = null;
 
-  showToast("Demo post created! 🔥");
+  showToast("Post created! 🏀");
 
   setTimeout(() => {
-
-    showHome();
-
-  }, 800);
-
+    show("home");
+  }, 500);
 }
 
-function toggleLike(id, button) {
-
-  const post = posts.find(p => p.id === id);
-
-  if (!post) return;
-
-  post.likes++;
-
-  button.classList.add("liked");
-
-  button.innerHTML = `♥ ${post.likes}`;
-
-}
-
-function sharePost(id) {
-
-  const post = posts.find(p => p.id === id);
-
-  if (!post) return;
-
-  if (navigator.share) {
-
-    navigator.share({
-
-      title: "Clutch",
-
-      text: post.caption
-
-    }).catch(() => {});
-
-  } else {
-
-    showToast("Post ready to share 🔗");
-
-  }
+/* =========================================================
+   GLOBAL FUNCTIONS
+   =========================================================
+   These are important because index.html uses onclick=""
+   ========================================================= */
 
 window.show = show;
-
 window.showHome = showHome;
-
 window.showDiscover = showDiscover;
-
 window.showFriends = showFriends;
-
 window.showProfile = showProfile;
-
 window.showCreate = showCreate;
 
 window.showRandomDrill = showRandomDrill;
-
 window.startDrill = startDrill;
 
 window.handleFile = handleFile;
-
 window.createPost = createPost;
 
-window.toggleLike = toggleLike;
+window.setType = setType;
 
+window.toggleLike = toggleLike;
 window.sharePost = sharePost;
 
-injectStyles();
+window.filterDrills = filterDrills;
+window.filterCategory = filterCategory;
+
+/* =========================================================
+   START APP
+   ========================================================= */
 
 showHome();
+```
