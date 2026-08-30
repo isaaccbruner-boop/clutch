@@ -404,6 +404,18 @@ function startDrill(title) {
 
         <p>${escapeHTML(drill.description)}</p>
 
+<div class="video-box">
+
+  <h2>Watch a Demo 🏀</h2>
+
+  <button class="watch-btn" onclick="window.open('https://www.youtube.com/results?search_query=' + encodeURIComponent(drill.title + ' basketball drill'), '_blank')">
+
+    ▶ Watch Drill Video
+
+  </button>
+
+</div>
+
         <div class="timer-box">
 
           <strong id="timer">60</strong>
