@@ -633,22 +633,32 @@ function loadLocalVideo(file) {
 
   if (!container) return;
 
-  container.innerHTML = `
+container.innerHTML = "";
 
-    <video
+const video = document.createElement("video");
 
-      class="drill-video"
+video.className = "drill-video";
 
-      controls
+video.controls = true;
 
-      autoplay
+video.autoplay = false;
 
-      playsinline
+video.playsInline = true;
 
-      src="${videoURL}">
+video.muted = false;
 
-    </video>
+video.src = videoURL;
 
+video.style.width = "100%";
+
+video.style.maxWidth = "700px";
+
+video.style.borderRadius = "16px";
+
+video.style.display = "block";
+
+container.appendChild(video);
+  
   `;
 
   showToast("Demo video loaded!");
@@ -1524,4 +1534,3 @@ window.showToast = showToast;
 ========================= */
 
 showHome();
-
