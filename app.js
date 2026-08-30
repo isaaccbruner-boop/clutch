@@ -1,3 +1,4 @@
+
 const DRILLS = [
 
   {
@@ -8,7 +9,9 @@ const DRILLS = [
 
     level: "Beginner",
 
-    description: "Build a consistent shooting motion close to the basket."
+    description: "Build a consistent shooting motion close to the basket.",
+
+    video: ""
 
   },
 
@@ -20,7 +23,9 @@ const DRILLS = [
 
     level: "Intermediate",
 
-    description: "Work through five spots around the court."
+    description: "Work through five spots around the court.",
+
+    video: ""
 
   },
 
@@ -32,7 +37,9 @@ const DRILLS = [
 
     level: "Beginner",
 
-    description: "Control two basketballs while improving your handle."
+    description: "Control two basketballs while improving your handle.",
+
+    video: ""
 
   },
 
@@ -44,7 +51,9 @@ const DRILLS = [
 
     level: "Intermediate",
 
-    description: "Practice quick crossovers while moving through cones."
+    description: "Practice quick crossovers while moving through cones.",
+
+    video: ""
 
   },
 
@@ -56,7 +65,9 @@ const DRILLS = [
 
     level: "Beginner",
 
-    description: "Improve touch and finishing around the basket."
+    description: "Improve touch and finishing around the basket.",
+
+    video: ""
 
   },
 
@@ -68,7 +79,9 @@ const DRILLS = [
 
     level: "Intermediate",
 
-    description: "Develop touch with floaters from different angles."
+    description: "Develop touch with floaters from different angles.",
+
+    video: ""
 
   },
 
@@ -80,7 +93,9 @@ const DRILLS = [
 
     level: "Beginner",
 
-    description: "Build better lateral movement and defensive footwork."
+    description: "Build better lateral movement and defensive footwork.",
+
+    video: ""
 
   },
 
@@ -92,7 +107,9 @@ const DRILLS = [
 
     level: "Intermediate",
 
-    description: "Practice closing out under control and contesting shots."
+    description: "Practice closing out under control and contesting shots.",
+
+    video: ""
 
   },
 
@@ -104,7 +121,9 @@ const DRILLS = [
 
     level: "Beginner",
 
-    description: "Build basketball-specific conditioning."
+    description: "Build basketball-specific conditioning.",
+
+    video: ""
 
   },
 
@@ -116,7 +135,9 @@ const DRILLS = [
 
     level: "Advanced",
 
-    description: "Use changes of speed to create separation."
+    description: "Use changes of speed to create separation.",
+
+    video: ""
 
   }
 
@@ -170,17 +191,23 @@ const POSTS = [
 
 let currentCategory = "All";
 
-let currentDrill = null;
-
 let selectedPostType = "Workout";
 
 let uploadedFile = null;
+
+let timerInterval = null;
 
 function app() {
 
   return document.getElementById("app");
 
 }
+
+/* =========================
+
+   NAVIGATION
+
+========================= */
 
 function show(page) {
 
@@ -220,6 +247,12 @@ function updateNav(page) {
 
 }
 
+/* =========================
+
+   HOME
+
+========================= */
+
 function showHome() {
 
   app().innerHTML = `
@@ -244,11 +277,15 @@ function showHome() {
 
         <p>
 
-          Get a random basketball drill whenever you need one.
+          Get a basketball drill whenever you need one.
 
         </p>
 
-        <button class="primary-btn" onclick="showRandomDrill()">
+        <button
+
+          class="primary-btn"
+
+          onclick="showRandomDrill()">
 
           Give Me a Drill 🏀
 
@@ -276,6 +313,12 @@ function showHome() {
 
 }
 
+/* =========================
+
+   POSTS
+
+========================= */
+
 function renderPosts() {
 
   return POSTS.map((post, index) => `
@@ -286,7 +329,7 @@ function renderPosts() {
 
         <div class="avatar">
 
-          ${post.name.charAt(0)}
+          ${escapeHTML(post.name.charAt(0))}
 
         </div>
 
@@ -328,13 +371,17 @@ function renderPosts() {
 
 }
 
+/* =========================
+
+   RANDOM DRILL
+
+========================= */
+
 function showRandomDrill() {
 
   const drill =
 
     DRILLS[Math.floor(Math.random() * DRILLS.length)];
-
-  currentDrill = drill;
 
   const container =
 
@@ -358,7 +405,9 @@ function showRandomDrill() {
 
       <p>${escapeHTML(drill.description)}</p>
 
-      <button class="secondary-btn"
+      <button
+
+        class="secondary-btn"
 
         onclick="startDrill('${escapeAttribute(drill.title)}')">
 
@@ -372,25 +421,49 @@ function showRandomDrill() {
 
 }
 
+/* =========================
+
+   DRILL PAGE
+
+========================= */
+
 function startDrill(title) {
 
-  const drill = DRILLS.find(item => item.title === title);
+  clearInterval(timerInterval);
+
+  const drill =
+
+    DRILLS.find(item => item.title === title);
 
   if (!drill) return;
 
   app().innerHTML = `
 
-    <section class="page">
+    <section class="page drill-page">
 
-      <button class="back-btn" onclick="showHome()">
+      <button
+
+        class="back-btn"
+
+        onclick="showHome()">
 
         ← Back
 
       </button>
 
-      <div class="eyebrow">DRILL</div>
+      <div class="eyebrow">
+
+        ${escapeHTML(drill.cat)}
+
+      </div>
 
       <h1>${escapeHTML(drill.title)}</h1>
+
+      <p class="subtitle">
+
+        ${escapeHTML(drill.level)} • Follow the instructions and put in the work.
+
+      </p>
 
       <div class="drill-card">
 
@@ -402,29 +475,121 @@ function startDrill(title) {
 
         </div>
 
-        <p>${escapeHTML(drill.description)}</p>
+        <h3>How to do it</h3>
 
-<div class="video-box">
+        <p>
 
-  <h2>Watch a Demo 🏀</h2>
+          ${escapeHTML(drill.description)}
 
-  <button class="watch-btn" onclick="window.open('https://www.youtube.com/results?search_query=' + encodeURIComponent(drill.title + ' basketball drill'), '_blank')">
+        </p>
 
-    ▶ Watch Drill Video
+      </div>
 
-  </button>
+      <div class="video-box">
 
-</div>
+        <div class="eyebrow">
 
-        <div class="timer-box">
-
-          <strong id="timer">60</strong>
-
-          <span>seconds</span>
+          DRILL DEMO
 
         </div>
 
-        <button class="primary-btn" onclick="runTimer()">
+        <h2>
+
+          Watch the drill
+
+        </h2>
+
+        <div id="video-container">
+
+          ${
+
+            drill.video
+
+              ? `
+
+                <video
+
+                  class="drill-video"
+
+                  controls
+
+                  playsinline
+
+                  src="${escapeAttribute(drill.video)}">
+
+                </video>
+
+              `
+
+              : `
+
+                <div class="video-placeholder">
+
+                  <div class="video-icon">▶</div>
+
+                  <strong>
+
+                    Demo video
+
+                  </strong>
+
+                  <p>
+
+                    Add a drill video here to watch the movement before you start.
+
+                  </p>
+
+                  <label class="video-upload-btn">
+
+                    Choose Demo Video
+
+                    <input
+
+                      type="file"
+
+                      accept="video/*"
+
+                      onchange="loadLocalVideo(this.files[0])"
+
+                      hidden>
+
+                  </label>
+
+                </div>
+
+              `
+
+          }
+
+        </div>
+
+      </div>
+
+      <div class="timer-box">
+
+        <div class="timer-label">
+
+          WORK TIMER
+
+        </div>
+
+        <strong id="timer">
+
+          60
+
+        </strong>
+
+        <span>
+
+          seconds
+
+        </span>
+
+        <button
+
+          class="primary-btn"
+
+          onclick="runTimer()">
 
           Start 60 Second Timer
 
@@ -440,7 +605,61 @@ function startDrill(title) {
 
 }
 
-let timerInterval = null;
+/* =========================
+
+   LOCAL VIDEO
+
+========================= */
+
+function loadLocalVideo(file) {
+
+  if (!file) return;
+
+  if (!file.type.startsWith("video/")) {
+
+    showToast("Please choose a video file.");
+
+    return;
+
+  }
+
+  const videoURL =
+
+    URL.createObjectURL(file);
+
+  const container =
+
+    document.getElementById("video-container");
+
+  if (!container) return;
+
+  container.innerHTML = `
+
+    <video
+
+      class="drill-video"
+
+      controls
+
+      autoplay
+
+      playsinline
+
+      src="${videoURL}">
+
+    </video>
+
+  `;
+
+  showToast("Demo video loaded!");
+
+}
+
+/* =========================
+
+   TIMER
+
+========================= */
 
 function runTimer() {
 
@@ -448,7 +667,9 @@ function runTimer() {
 
   let seconds = 60;
 
-  const timer = document.getElementById("timer");
+  const timer =
+
+    document.getElementById("timer");
 
   if (!timer) return;
 
@@ -464,13 +685,23 @@ function runTimer() {
 
       clearInterval(timerInterval);
 
-      showToast("Drill complete! Great work 🏀");
+      showToast(
+
+        "Drill complete! Great work 🏀"
+
+      );
 
     }
 
   }, 1000);
 
 }
+
+/* =========================
+
+   DISCOVER
+
+========================= */
 
 function showDiscover() {
 
@@ -484,27 +715,59 @@ function showDiscover() {
 
       <p class="subtitle">
 
-        Find drills and workouts to improve your game.
+        Find drills to improve your game.
 
       </p>
 
       <div class="category-row">
 
-        ${["All", "Shooting", "Ball Handling", "Finishing", "Defense", "Conditioning"]
+        ${[
 
-          .map(category => `
+          "All",
 
-            <button
+          "Shooting",
 
-              class="category-btn ${currentCategory === category ? "selected" : ""}"
+          "Ball Handling",
 
-              onclick="filterCategory('${escapeAttribute(category)}')">
+          "Finishing",
 
-              ${escapeHTML(category)}
+          "Defense",
 
-            </button>
+          "Conditioning"
 
-          `).join("")}
+        ].map(category => `
+
+          <button
+
+            class="category-btn ${
+
+              currentCategory === category
+
+                ? "selected"
+
+                : ""
+
+            }"
+
+            onclick="filterCategory('${escapeAttribute(category)}')">
+
+            ${escapeHTML(category)}
+
+          </button>
+
+        `).join("")}
+
+      </div>
+
+      <div class="search-wrap">
+
+        <input
+
+          type="search"
+
+          placeholder="Search drills..."
+
+          oninput="filterDrills(this.value)">
 
       </div>
 
@@ -528,7 +791,11 @@ function renderDrills() {
 
       ? DRILLS
 
-      : DRILLS.filter(drill => drill.cat === currentCategory);
+      : DRILLS.filter(
+
+          drill => drill.cat === currentCategory
+
+        );
 
   if (!drills.length) {
 
@@ -558,7 +825,11 @@ function renderDrills() {
 
       <h3>${escapeHTML(drill.title)}</h3>
 
-      <p>${escapeHTML(drill.description)}</p>
+      <p>
+
+        ${escapeHTML(drill.description)}
+
+      </p>
 
       <button
 
@@ -578,65 +849,85 @@ function renderDrills() {
 
 function filterDrills(searchTerm) {
 
-  const list = document.getElementById("drill-list");
+  const list =
+
+    document.getElementById("drill-list");
 
   if (!list) return;
 
-  const term = String(searchTerm || "").toLowerCase();
+  const term =
 
-  const drills = DRILLS.filter(drill => {
+    String(searchTerm || "").toLowerCase();
 
-    const matchesCategory =
+  const drills =
 
-      currentCategory === "All" ||
+    DRILLS.filter(drill => {
 
-      drill.cat === currentCategory;
+      const matchesCategory =
 
-    const matchesSearch =
+        currentCategory === "All" ||
 
-      drill.title.toLowerCase().includes(term) ||
+        drill.cat === currentCategory;
 
-      drill.description.toLowerCase().includes(term) ||
+      const matchesSearch =
 
-      drill.cat.toLowerCase().includes(term);
+        drill.title.toLowerCase().includes(term) ||
 
-    return matchesCategory && matchesSearch;
+        drill.description.toLowerCase().includes(term) ||
 
-  });
+        drill.cat.toLowerCase().includes(term);
 
-  list.innerHTML = drills.length
+      return matchesCategory && matchesSearch;
 
-    ? drills.map(drill => `
+    });
 
-        <article class="drill-card">
+  list.innerHTML =
 
-          <div class="drill-top">
+    drills.length
 
-            <span>${escapeHTML(drill.cat)}</span>
+      ? drills.map(drill => `
 
-            <span>${escapeHTML(drill.level)}</span>
+          <article class="drill-card">
 
-          </div>
+            <div class="drill-top">
 
-          <h3>${escapeHTML(drill.title)}</h3>
+              <span>${escapeHTML(drill.cat)}</span>
 
-          <p>${escapeHTML(drill.description)}</p>
+              <span>${escapeHTML(drill.level)}</span>
 
-          <button
+            </div>
 
-            class="secondary-btn"
+            <h3>${escapeHTML(drill.title)}</h3>
 
-            onclick="startDrill('${escapeAttribute(drill.title)}')">
+            <p>
 
-            View Drill
+              ${escapeHTML(drill.description)}
 
-          </button>
+            </p>
 
-        </article>
+            <button
 
-      `).join("")
+              class="secondary-btn"
 
-    : `<div class="empty-state">No drills found.</div>`;
+              onclick="startDrill('${escapeAttribute(drill.title)}')">
+
+              View Drill
+
+            </button>
+
+          </article>
+
+        `).join("")
+
+      : `
+
+        <div class="empty-state">
+
+          No drills found.
+
+        </div>
+
+      `;
 
 }
 
@@ -644,13 +935,15 @@ function filterCategory(category) {
 
   currentCategory = category;
 
-  if (typeof showDiscover === "function") {
-
-    showDiscover();
-
-  }
+  showDiscover();
 
 }
+
+/* =========================
+
+   FRIENDS
+
+========================= */
 
 function showFriends() {
 
@@ -658,7 +951,11 @@ function showFriends() {
 
     <section class="page">
 
-      <div class="eyebrow">YOUR PEOPLE</div>
+      <div class="eyebrow">
+
+        YOUR PEOPLE
+
+      </div>
 
       <h1>Friends</h1>
 
@@ -668,71 +965,91 @@ function showFriends() {
 
       </p>
 
-      <div class="friend-card">
+      ${renderFriend(
 
-        <div class="avatar">J</div>
+        "J",
 
-        <div>
+        "Jaylen",
 
-          <strong>Jaylen</strong>
+        "@jay_ball"
 
-          <span>@jay_ball</span>
+      )}
 
-        </div>
+      ${renderFriend(
 
-        <button class="secondary-btn" onclick="showToast('Jaylen added!')">
+        "M",
 
-          Add
+        "Marcus",
 
-        </button>
+        "@marcushoops"
 
-      </div>
+      )}
 
-      <div class="friend-card">
+      ${renderFriend(
 
-        <div class="avatar">M</div>
+        "D",
 
-        <div>
+        "Daniel",
 
-          <strong>Marcus</strong>
+        "@dhoops"
 
-          <span>@marcushoops</span>
-
-        </div>
-
-        <button class="secondary-btn" onclick="showToast('Marcus added!')">
-
-          Add
-
-        </button>
-
-      </div>
-
-      <div class="friend-card">
-
-        <div class="avatar">D</div>
-
-        <div>
-
-          <strong>Daniel</strong>
-
-          <span>@dhoops</span>
-
-        </div>
-
-        <button class="secondary-btn" onclick="showToast('Daniel added!')">
-
-          Add
-
-        </button>
-
-      </div>
+      )}
 
     </section>
 
   `;
 
 }
+
+function renderFriend(
+
+  initial,
+
+  name,
+
+  username
+
+) {
+
+  return `
+
+    <div class="friend-card">
+
+      <div class="avatar">
+
+        ${initial}
+
+      </div>
+
+      <div>
+
+        <strong>${escapeHTML(name)}</strong>
+
+        <span>${escapeHTML(username)}</span>
+
+      </div>
+
+      <button
+
+        class="secondary-btn"
+
+        onclick="showToast('${escapeAttribute(name)} added!')">
+
+        Add
+
+      </button>
+
+    </div>
+
+  `;
+
+}
+
+/* =========================
+
+   PROFILE
+
+========================= */
 
 function showProfile() {
 
@@ -792,19 +1109,33 @@ function showProfile() {
 
 }
 
+/* =========================
+
+   CREATE POST
+
+========================= */
+
 function showCreate() {
 
   app().innerHTML = `
 
     <section class="page create-page">
 
-      <button class="back-btn" onclick="showHome()">
+      <button
+
+        class="back-btn"
+
+        onclick="showHome()">
 
         ← Back
 
       </button>
 
-      <div class="eyebrow">CREATE</div>
+      <div class="eyebrow">
+
+        CREATE
+
+      </div>
 
       <h1>Share Your Work</h1>
 
@@ -816,35 +1147,29 @@ function showCreate() {
 
       <div class="type-selector">
 
-        <button
+        ${["Workout", "Drill", "Game"]
 
-          class="${selectedPostType === "Workout" ? "selected" : ""}"
+          .map(type => `
 
-          onclick="setType('Workout')">
+            <button
 
-          Workout
+              class="${
 
-        </button>
+                selectedPostType === type
 
-        <button
+                  ? "selected"
 
-          class="${selectedPostType === "Drill" ? "selected" : ""}"
+                  : ""
 
-          onclick="setType('Drill')">
+              }"
 
-          Drill
+              onclick="setType('${type}')">
 
-        </button>
+              ${type}
 
-        <button
+            </button>
 
-          class="${selectedPostType === "Game" ? "selected" : ""}"
-
-          onclick="setType('Game')">
-
-          Game
-
-        </button>
+          `).join("")}
 
       </div>
 
@@ -870,13 +1195,21 @@ function showCreate() {
 
             onchange="handleFile(this.files[0])">
 
-          <span>＋ Add Photo or Video</span>
+          <span>
+
+            ＋ Add Photo or Video
+
+          </span>
 
         </label>
 
         <div id="file-name"></div>
 
-        <button class="primary-btn" onclick="createPost()">
+        <button
+
+          class="primary-btn"
+
+          onclick="createPost()">
 
           Post ${escapeHTML(selectedPostType)}
 
@@ -892,21 +1225,23 @@ function showCreate() {
 
 function handleFile(file) {
 
-  uploadedFile = file || null;
+  uploadedFile =
 
-  const display = document.getElementById("file-name");
+    file || null;
+
+  const display =
+
+    document.getElementById("file-name");
 
   if (!display) return;
 
-  if (!file) {
+  display.textContent =
 
-    display.textContent = "";
+    file
 
-    return;
+      ? `Selected: ${file.name}`
 
-  }
-
-  display.textContent = `Selected: ${file.name}`;
+      : "";
 
 }
 
@@ -920,15 +1255,23 @@ function setType(type) {
 
 function createPost() {
 
-  const textarea = document.getElementById("post-text");
+  const textarea =
+
+    document.getElementById("post-text");
 
   if (!textarea) return;
 
-  const text = textarea.value.trim();
+  const text =
+
+    textarea.value.trim();
 
   if (!text && !uploadedFile) {
 
-    showToast("Add something before posting.");
+    showToast(
+
+      "Add something before posting."
+
+    );
 
     return;
 
@@ -940,7 +1283,11 @@ function createPost() {
 
     username: "@isaac",
 
-    text: text || `${selectedPostType} posted 🏀`,
+    text:
+
+      text ||
+
+      `${selectedPostType} posted 🏀`,
 
     likes: 0,
 
@@ -950,7 +1297,11 @@ function createPost() {
 
   uploadedFile = null;
 
-  showToast("Post created! 🏀");
+  showToast(
+
+    "Post created! 🏀"
+
+  );
 
   setTimeout(() => {
 
@@ -960,9 +1311,17 @@ function createPost() {
 
 }
 
+/* =========================
+
+   LIKES
+
+========================= */
+
 function toggleLike(index) {
 
-  const post = POSTS[index];
+  const post =
+
+    POSTS[index];
 
   if (!post) return;
 
@@ -984,9 +1343,17 @@ function toggleLike(index) {
 
 }
 
+/* =========================
+
+   SHARE
+
+========================= */
+
 async function sharePost(index) {
 
-  const post = POSTS[index];
+  const post =
+
+    POSTS[index];
 
   if (!post) return;
 
@@ -1002,7 +1369,7 @@ async function sharePost(index) {
 
         title: "CLUTCH 🏀",
 
-        text: text
+        text
 
       });
 
@@ -1022,21 +1389,37 @@ async function sharePost(index) {
 
     } catch (error) {
 
-      showToast("Sharing isn't available here.");
+      showToast(
+
+        "Sharing isn't available here."
+
+      );
 
     }
 
   } else {
 
-    showToast("Sharing isn't available here.");
+    showToast(
+
+      "Sharing isn't available here."
+
+    );
 
   }
 
 }
 
+/* =========================
+
+   TOAST
+
+========================= */
+
 function showToast(message) {
 
-  const toast = document.getElementById("toast");
+  const toast =
+
+    document.getElementById("toast");
 
   if (!toast) {
 
@@ -1046,7 +1429,9 @@ function showToast(message) {
 
   }
 
-  toast.textContent = message;
+  toast.textContent =
+
+    message;
 
   toast.classList.add("show");
 
@@ -1058,11 +1443,11 @@ function showToast(message) {
 
 }
 
-function showToasts() {
+/* =========================
 
-  showToast("Welcome to CLUTCH 🏀");
+   SECURITY / TEXT HELPERS
 
-}
+========================= */
 
 function escapeHTML(value) {
 
@@ -1090,6 +1475,12 @@ function escapeAttribute(value) {
 
 }
 
+/* =========================
+
+   GLOBAL FUNCTIONS
+
+========================= */
+
 window.show = show;
 
 window.showHome = showHome;
@@ -1105,6 +1496,8 @@ window.showCreate = showCreate;
 window.showRandomDrill = showRandomDrill;
 
 window.startDrill = startDrill;
+
+window.loadLocalVideo = loadLocalVideo;
 
 window.runTimer = runTimer;
 
@@ -1124,6 +1517,11 @@ window.filterCategory = filterCategory;
 
 window.showToast = showToast;
 
-window.showToasts = showToasts;
+/* =========================
+
+   START APP
+
+========================= */
 
 showHome();
+
